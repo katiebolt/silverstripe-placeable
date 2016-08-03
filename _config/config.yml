@@ -1,0 +1,17 @@
+---
+Name: silverstripe-placeable
+After:
+  - 'framework/*'
+  - 'cms/*'
+---
+ContentController:
+  url_handlers:
+    'placement/$ID!/$ACTION!': 'placement'
+CMSPageAddController:
+  extensions:
+    - CMSPageAddControllerPlaceable
+LeftAndMain:
+  extensions:
+    - LeftAndMainPlaceable
+#   extra_requirements_javascript:
+#     - silverstripe-placeable/js/PlaceableLeftAndMain.js
