@@ -40,6 +40,17 @@ class BlocksSection extends SectionObject
     );
 
     /**
+     * CMS Page Fields
+     * @return FieldList
+     */
+    public function getCMSPageFields()
+    {
+        $fields = parent::getCMSPageFields();
+        $this->extend('updateCMSPageFields', $fields);
+        return $fields;
+    }
+
+    /**
      * Event handler called after writing to the database.
      */
     public function onAfterWrite()
@@ -63,7 +74,7 @@ class BlocksSection extends SectionObject
                 $Block = $ClassName::create();
             }
             $Block->PresetID = $Preset->ID;
-            $Block->write();
+            $Block->forceChange()->write();
             $this->Blocks()->add(
                 $Block,
                 array(
