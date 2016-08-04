@@ -72,6 +72,30 @@ class PlaceableObject extends DataObject
     }
 
     /**
+     * CMS Fields
+     * @return FieldList
+     */
+    public function getCMSFields()
+    {
+        $fields = $this->scaffoldFormFields(
+            array(
+                // Don't allow has_many/many_many relationship editing before the record is first saved
+                'includeRelations' => ($this->ID > 0),
+                'tabbed' => true,
+                'ajaxSafe' => true
+            )
+        );
+        $fields->removeByName('PresetID');
+        $fields->addFieldToTab(
+            'Root.Main',
+            ReadonlyField::create('PresetName','Preset')
+                ->setValue($this->Preset()->Title)
+        );
+        $this->extend('updateCMSFields', $fields);
+        return $fields;
+    }
+
+    /**
      * Renders HTML
      *
      * @return string
