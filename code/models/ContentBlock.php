@@ -37,10 +37,12 @@ class ContentBlock extends BlockObject
     public function getCMSPageFields()
     {
         $fields = parent::getCMSPageFields();
-        $fields->push(
-            HtmlEditorField::create(
-                'Content',
-                _t('Placeable.CONTENT', 'Content')
+        $fields->addFields(
+            array(
+                HtmlEditorField::create(
+                    'Content',
+                    _t('Placeable.CONTENT', 'Content')
+                )
             )
         );
         $this->extend('updateCMSPageFields', $fields);

@@ -66,13 +66,6 @@ class PlaceablePage extends Page
         }
 
         foreach ($this->Sections() as $Section) {
-            $fields->addFieldToTab(
-                "Root.{$Section->Type}",
-                LiteralField::create(
-                    "Instance{$Section->Type}",
-                    "{$Section->Instance}"
-                )
-            );
             foreach ($Section->getCMSPageFields() as $Field) {
                 $Field->name = "$Section->ID[$Field->name]";
                 $fields->addFieldToTab(
@@ -80,18 +73,24 @@ class PlaceablePage extends Page
                     $Field
                 );
             }
-            // Debug::dump($Section->ClassName);
-            // Debug::dump($Section->Blocks());
-
             if ($Section->Blocks()->exists()) {
                 foreach ($Section->Blocks() as $Block) {
+                    $blockFields = CompositeField::create();
+                    $blockFields->push(
+                        HeaderField::create(
+                            "header$Block->Type",
+                            $Block->Preset()->Title
+                        )
+                    );
                     foreach ($Block->getCMSPageFields() as $Field) {
                         $Field->name = "$Block->ID[$Field->name]";
-                        $fields->addFieldToTab(
-                            "Root.{$Section->Type}",
-                            $Field
-                        );
+                        $blockFields->push($Field);
                     }
+                    // Debug::dump(FieldList::create($blockFields));
+                    $fields->addFieldToTab(
+                        "Root.{$Section->Type}",
+                        $blockFields
+                    );
                 }
             }
         }
@@ -143,7 +142,7 @@ class PlaceablePage extends Page
                 $Section = $ClassName::create();
             }
             $Section->PresetID = $Preset->ID;
-            $Section->write();
+            $Section->forceChange()->write();
             $this->Sections()->add(
                 $Section,
                 array(

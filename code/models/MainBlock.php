@@ -22,19 +22,18 @@ class MainBlock extends BlockObject
     );
 
     /**
-     * CMS Fields
+     * CMS Page Fields
      * @return FieldList
      */
-    public function getCMSFields()
+    public function getCMSPageFields()
     {
-        // $fields = parent::getCMSFields();
-        // $fields->addFieldToTab(
-        //     'Root.Main',
-        //
-        // );
-        $fields = FieldList::create(
-            ReadonlyField::create('Title')
+        $fields = parent::getCMSPageFields();
+        $fields->addFields(
+            array(
+                ReadonlyField::create('Title')
+            )
         );
+        $this->extend('updateCMSPageFields', $fields);
         return $fields;
     }
 

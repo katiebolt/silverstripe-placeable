@@ -13,5 +13,8 @@ CMSPageAddController:
 LeftAndMain:
   extensions:
     - LeftAndMainPlaceable
+FieldList:
+  extensions:
+    - FieldListExtension
 #   extra_requirements_javascript:
 #     - silverstripe-placeable/js/PlaceableLeftAndMain.js
