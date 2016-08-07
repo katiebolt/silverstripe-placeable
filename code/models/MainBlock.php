@@ -28,11 +28,7 @@ class MainBlock extends BlockObject
     public function getCMSPageFields()
     {
         $fields = parent::getCMSPageFields();
-        $fields->addFields(
-            array(
-                ReadonlyField::create('Title')
-            )
-        );
+        $fields->removeByName('Title');
         $this->extend('updateCMSPageFields', $fields);
         return $fields;
     }

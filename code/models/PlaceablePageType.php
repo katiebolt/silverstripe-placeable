@@ -154,7 +154,7 @@ class PlaceablePageType extends DataObject
         parent::onAfterWrite();
         // Update all pages of this page type.
         foreach ($this->Pages() as $Page){
-            $Page->write();
+            $Page->forceChange()->write();
         }
     }
 

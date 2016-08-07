@@ -64,34 +64,34 @@ class PlaceablePage extends Page
                 )
             );
         }
-
-        foreach ($this->Sections() as $Section) {
-            foreach ($Section->getCMSPageFields() as $Field) {
-                $Field->name = "$Section->ID[$Field->name]";
+        foreach ($this->PageFields as $Section) {
+            $fields->addFieldToTab(
+                "Root.{$Section->Type}",
+                HeaderField::create(
+                    "header[$Section->Type]",
+                    $Section->Title
+                )
+            );
+            foreach ($Section->Fields as $Field) {
                 $fields->addFieldToTab(
                     "Root.{$Section->Type}",
                     $Field
                 );
             }
-            if ($Section->Blocks()->exists()) {
-                foreach ($Section->Blocks() as $Block) {
-                    $blockFields = CompositeField::create();
-                    $blockFields->push(
-                        HeaderField::create(
-                            "header$Block->Type",
-                            $Block->Preset()->Title
-                        )
-                    );
-                    foreach ($Block->getCMSPageFields() as $Field) {
-                        $Field->name = "$Block->ID[$Field->name]";
-                        $blockFields->push($Field);
-                    }
-                    // Debug::dump(FieldList::create($blockFields));
-                    $fields->addFieldToTab(
-                        "Root.{$Section->Type}",
-                        $blockFields
-                    );
+            foreach ($Section->Blocks as $Block) {
+                $blockfields = CompositeField::create(
+                    HeaderField::create(
+                        "header[$Block->Type]",
+                        $Block->Title
+                    )
+                );
+                foreach ($Block->Fields as $Field) {
+                    $blockfields->push($Field);
                 }
+                $fields->addFieldToTab(
+                    "Root.{$Section->Type}",
+                    $blockfields
+                );
             }
         }
         return $fields;
@@ -117,12 +117,87 @@ class PlaceablePage extends Page
         return $fields;
     }
 
+    public function getPageFields()
+    {
+        $allfields = arrayList::create();
+        foreach ($this->Sections()->sort('Sort ASC') as $Section) {
+            $newsectionfields = arrayList::create();
+            $origsectionfields = $Section->getCMSPageFields();
+            if (!$origsectionfields->count() && !$Section->Blocks()->count()) {
+                continue;
+            }
+            foreach ($origsectionfields as $Field) {
+                $Field->value = $Section->{$Field->name};
+                $Field->original_name = $Field->name;
+                $Field->name = "{$Field->name}_{$Section->ID}";
+                $newsectionfields->push($Field);
+            }
+            $newsectionblocks = arrayList::create();
+            if ($Section->Blocks()->exists()) {
+                foreach ($Section->Blocks()->sort('Sort ASC') as $Block) {
+                    $newblockfields = arrayList::create();
+                    $origblockfields = $Block->getCMSPageFields();
+                    if (!$origblockfields->count()) {
+                        continue;
+                    }
+                    foreach ($origblockfields as $Field) {
+                        $Field->value = $Block->{$Field->name};
+                        $Field->original_name = $Field->name;
+                        $Field->name = "{$Field->name}_{$Block->ID}";
+                        $newblockfields->push($Field);
+                    }
+                    $newsectionblocks->push(
+                        arrayData::create(
+                            array(
+                                'DataObject' => $Block,
+                                'Type' => $Block->Preset()->Type,
+                                'Title' => $Block->Preset()->Title,
+                                'Fields' => $newblockfields
+                            )
+                        )
+                    );
+                }
+            }
+            $allfields->push(
+                arrayData::create(
+                    array(
+                        'DataObject' => $Section,
+                        'Type' => $Section->Preset()->Type,
+                        'Title' => $Section->Preset()->Title,
+                        'Fields' => $newsectionfields,
+                        'Blocks' => $newsectionblocks
+                    )
+                )
+            );
+        }
+        return $allfields;
+    }
+
     /**
      * Event handler called after writing to the database.
      */
     public function onAfterWrite()
     {
         parent::onAfterWrite();
+        foreach ($this->PageFields as $Section) {
+            $SectionObject = $Section->DataObject;
+            foreach ($Section->Fields as $Field) {
+                if (isset($_POST["$Field->name"])) {
+                    $SectionObject->{$Field->original_name} = $_POST["$Field->name"];
+                }
+            }
+            $SectionObject->forceChange()->write();
+            foreach ($Section->Blocks as $Block) {
+                $BlockObject = $Block->DataObject;
+                foreach ($Block->Fields as $Field) {
+                    if (isset($_POST["$Field->name"])) {
+                        $BlockObject->{$Field->original_name} = $_POST["$Field->name"];
+                    }
+                }
+                $BlockObject->forceChange()->write();
+            }
+        }
+        // $this->writeRelations();
         // build relationships
         foreach ($this->Presets as $Preset) {
             $ClassName = $Preset->ObjectClassName;
@@ -173,8 +248,8 @@ class PlaceablePage extends Page
      **/
     public function getPresets()
     {
-        $Presets = new arrayList();
-        foreach ($this->PageType()->Sections() as $Section) {
+        $Presets = arrayList::create();
+        foreach ($this->PageType()->Sections()->sort('Sort ASC') as $Section) {
             $Presets->Push($Section);
         }
         return $Presets;
