@@ -175,7 +175,7 @@ class PlaceableObject extends DataObject
     public function getAnchorAttr()
     {
         if ($this->Anchor) {
-            return Convert::raw2htmlatt(" id='$this->Anchor'");
+            return " id='$this->Anchor'";
         }
         return false;
     }
@@ -204,7 +204,7 @@ class PlaceableObject extends DataObject
     public function getClassAttr()
     {
         if ($this->Classes) {
-            return Convert::raw2htmlatt(" class='$this->Classes'");
+            return " class='$this->Classes'";
         }
         return false;
     }
