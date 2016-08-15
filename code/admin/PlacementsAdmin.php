@@ -11,7 +11,7 @@ class PlacementsAdmin extends ModelAdmin
      * Menu icon for Left and Main CMS
      * @var string
      */
-    private static $menu_icon = 'silverstripe-placeable/img/icon.png';
+    private static $menu_icon = 'placeable/img/icon.png';
 
     /**
      * Managed data objects for CMS

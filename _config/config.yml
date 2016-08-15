@@ -14,9 +14,9 @@ LeftAndMain:
   extensions:
     - LeftAndMainPlaceable
   extra_requirements_javascript:
-    - silverstripe-placeable/js/Placeable.CMSMain.js
+    - placeable/js/Placeable.CMSMain.js
   extra_requirements_css:
-    - silverstripe-placeable/css/Placeable.CMSMain.css
+    - placeable/css/Placeable.CMSMain.css
 FieldList:
   extensions:
     - FieldListExtension
