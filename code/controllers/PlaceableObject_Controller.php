@@ -18,7 +18,6 @@ class PlaceableObject_Controller extends Controller
      public function __contruct($PlaceableObject = null)
      {
          if ($PlaceableObject) {
-             Debug::dump($PlaceableObject);
              $this->PlaceableObject = $PlaceableObject;
              $this->failover = $PlaceableObject;
          }
@@ -27,6 +26,10 @@ class PlaceableObject_Controller extends Controller
 
      public function index()
      {
+         return;
+     }
+
+     public function init() {
          return;
      }
 

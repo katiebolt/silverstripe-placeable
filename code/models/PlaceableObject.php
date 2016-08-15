@@ -109,14 +109,14 @@ class PlaceableObject extends DataObject
         $pageType = ($page->ClassName ? '_'.$page->ClassName : '');
         $className = $this->ClassName;
         $templates = array(
-            $className.$pageType.$custom_template,
+            $className.$pageType.$customTemplate,
             $className.$customTemplate,
             $className.$pageType,
             $className,
             'DefaultPlacement'
         );
         $this->extend('updateLayout', $templates);
-        return $this->renderWith($templates);
+        return $this->renderWith($templates, $this->getController());
     }
 
     /**
