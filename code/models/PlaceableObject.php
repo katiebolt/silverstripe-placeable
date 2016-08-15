@@ -126,7 +126,7 @@ class PlaceableObject extends DataObject
      **/
     public function getDebugInfo()
     {
-        if (!Director::isDev()) {
+        if (Director::isLive()) {
             return false;
         }
         $Debug = array(
