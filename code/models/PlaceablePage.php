@@ -11,7 +11,7 @@ class PlaceablePage extends Page
      * Singular name for CMS
      * @var string
      */
-    private static $singular_name = 'Preset Page';
+    private static $singular_name = 'Placeable Page';
 
     /**
      * Has_one relationship
@@ -53,7 +53,7 @@ class PlaceablePage extends Page
                 array(
                     LiteralField::create(
                         'DeveloperNote',
-                        '<p class="message warning">'._t('Placeable.DEVNOTE', 'This area is only visible during development and is intended to help debug.').'</p>'
+                        '<p class="message warning">'._t('Placeable.DEVNOTE', 'This tab is only visible during development and is intended to help debug.').'</p>'
                     ),
                     GridField::create(
                         'Regions',
