@@ -1,6 +1,6 @@
 <?php
 /**
- * Description
+ * Basic content block
  *
  * @package silverstripe
  * @subpackage silverstripe-placeable

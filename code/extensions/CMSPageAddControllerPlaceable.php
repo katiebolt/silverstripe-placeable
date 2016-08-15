@@ -1,6 +1,6 @@
 <?php
 /**
- * Description
+ * Adds page preset options to the add page controller
  *
  * @package silverstripe
  * @subpackage silverstripe-placeable
@@ -13,30 +13,22 @@ class CMSPageAddControllerPlaceable extends Extension
      */
     public function updatePageOptions(FieldList $fields)
     {
-        $PageTypeField = $fields->fieldByName('PageType');
-        $PageTypes = $PageTypeField->getSource();
-        $PlaceablePageTypes = PlaceablePageType::get();
-        unset($PageTypes['Page']);
-        // $PageTypes["PlaceablePage"] = "<span class='page-icon'></span><strong class='title'>Placeable page</strong><span class='description'>Placeable page</span>";
-        if ($PlaceablePageTypes->Count() == 0) {
-            unset($PageTypes['PlaceablePage']);
+        $pageTypeField = $fields->fieldByName('PageType');
+        $pageTypes = $pageTypeField->getSource();
+        $placeablePageTypes = PlaceablePageType::get();
+        // unset($pageTypes['Page'],$pageTypes['PlaceablePage']);
+        unset($pageTypes['Page']);
+        $pageTypeField->setSource($pageTypes);
+        $types = array();
+        foreach ($placeablePageTypes as $type) {
+            $types[$type->ID] = "<span class='page-icon'></span><strong class='title'>$type->Title</strong><span class='description'>$type->Description</span>";
         }
-        $PageTypeField->setSource($PageTypes);
-        $Types = array();
-        foreach ($PlaceablePageTypes as $type) {
-            $Types[$type->ID] = "<span class='page-icon'></span><strong class='title'>$type->Title</strong><span class='description'>$type->Description</span>";
-        }
-
-        $numericLabelTmpl = '<span class="step-label"><span class="flyout">%d</span><span class="arrow"></span><span class="title">%s</span></span>';
-
         $fields->push(
-            DisplayLogicWrapper::create(
                 OptionsetField::create(
                     'PlaceablePageTypeID',
-                    sprintf($numericLabelTmpl, 3, _t('Placeable.CHOOSEPRESET', 'Choose preset')),
-                    $Types
+                    _t('Placeable.CHOOSEPRESET', 'Choose preset'),
+                    $types
                 )
-            )->DisplayIf('PageType')->isEqualTo('PlaceablePage')->end()
         );
         return $fields;
     }

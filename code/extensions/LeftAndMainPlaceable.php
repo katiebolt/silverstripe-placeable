@@ -1,6 +1,6 @@
 <?php
 /**
- * Description
+ * Assigns new placeable pages to a page type
  *
  * @package silverstripe
  * @subpackage mysite

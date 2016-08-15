@@ -1,0 +1,68 @@
+#PageType{
+    border-bottom: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 8px 0 0 0;
+    ul{
+        padding-bottom: 0;
+    }
+    li.valPlaceablePage{
+        display: none;
+    }
+}
+#PlaceablePageTypeID{
+    margin-top: 0;
+    &>label{
+        display: none;
+    }
+    ul {
+        padding-top: 0;
+        padding-left: 20px;
+        li {
+            float: none;
+            width: 100%;
+            padding: 9px 0 9px 15px;
+            overflow: hidden;
+            border-bottom: none;
+        }
+        li:hover,
+        li.selected {
+            background-color: rgba(255, 255, 102, 0.3);
+        }
+        li.disabled {
+            color: #aaa;
+            opacity: 0.5;
+        }
+        li.disabled:hover {
+            background: none;
+        }
+        li input {
+            margin: inherit;
+        }
+        li label {
+            padding-left: 0;
+            padding-bottom: 0;
+        }
+        li input,
+        li label,
+        li .page-icon,
+        li .title {
+            float: left;
+            line-height: 1.3em;
+        }
+        li .page-icon {
+            margin: 0 4px;
+        }
+        li .title {
+            width: 120px;
+            font-weight: bold;
+            padding-right: 10px;
+        }
+        li .description {
+            font-style: italic;
+            display: inline;
+            clear: none;
+            margin: 0;
+        }
+    }
+}

@@ -1,30 +1,30 @@
 <?php
 /**
- * Description
+ * A abstract class.
  *
  * @package silverstripe
  * @subpackage silverstripe-placeable
  */
-class SectionObject extends PlaceableObject
+class RegionObject extends PlaceableObject
 {
     /**
      * Singular name for CMS
      * @var string
      */
-    private static $singular_name = 'Section';
+    private static $singular_name = 'Region';
 
     /**
      * Plural name for CMS
      * @var string
      */
-    private static $plural_name = 'Sections';
+    private static $plural_name = 'Regions';
 
     /**
      * Belongs_many_many relationship
      * @var array
      */
     private static $belongs_many_many = array(
-        'Pages' => 'PlaceablePage.Sections'
+        'Pages' => 'PlaceablePage.Regions'
     );
 
     /**
@@ -37,25 +37,25 @@ class SectionObject extends PlaceableObject
         return $fields;
     }
 }
-class SectionObject_Controller extends PlaceableObject_Controller
+class RegionObject_Controller extends PlaceableObject_Controller
 {
     public function init() {
         parent::init();
     }
 }
-class SectionObject_Preset extends PlaceableObject_Preset
+class RegionObject_Preset extends PlaceableObject_Preset
 {
     /**
      * Singular name for CMS
      * @var string
      */
-    private static $singular_name = 'Section';
+    private static $singular_name = 'Region';
 
     /**
      * Plural name for CMS
      * @var string
      */
-    private static $plural_name = 'Section Presets';
+    private static $plural_name = 'Region Presets';
 
     /**
      * CMS Fields
@@ -71,12 +71,12 @@ class SectionObject_Preset extends PlaceableObject_Preset
                 DropdownField::create(
                     'ClassName',
                     _t('Placeable.TYPE', 'Type'),
-                    singleton('SectionObject')->SubClassPresets
+                    singleton('RegionObject')->SubClassPresets
                 )->setEmptyString($none_string),
                 DropdownField::create(
                     'Style',
                     _t('Placeable.STYLE', 'Style'),
-                    singleton('SectionObject')->Styles
+                    singleton('RegionObject')->Styles
                 )->setEmptyString($none_string)
             )
         );

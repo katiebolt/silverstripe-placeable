@@ -1,11 +1,11 @@
 <?php
 /**
- * Description
+ * Region that lists blocks
  *
  * @package silverstripe
  * @subpackage silverstripe-placeable
  */
-class BlocksSection extends SectionObject
+class BlocksRegion extends RegionObject
 {
     /**
      * Singular name for CMS
@@ -86,25 +86,25 @@ class BlocksSection extends SectionObject
         }
     }
 }
-class BlocksSection_Controller extends SectionObject_Controller
+class BlocksRegion_Controller extends RegionObject_Controller
 {
     public function init() {
         parent::init();
     }
 }
-class BlocksSection_Preset extends SectionObject_Preset
+class BlocksRegion_Preset extends RegionObject_Preset
 {
     /**
      * Singular name for CMS
      * @var string
      */
-    private static $singular_name = 'Block Section Preset';
+    private static $singular_name = 'Block Region Preset';
 
     /**
      * Plural name for CMS
      * @var string
      */
-    private static $plural_name = 'Block Section Presets';
+    private static $plural_name = 'Block Region Presets';
 
     /**
      * Many_many relationship

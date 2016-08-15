@@ -1,6 +1,6 @@
 <?php
 /**
- * Description
+ * A abstract class.  This is extended upon by RegionObject and BlockObject
  *
  * @package silverstripe
  * @subpackage silverstripe-placeable
@@ -64,7 +64,7 @@ class PlaceableObject extends DataObject
         $fields = FieldList::create(
             TextField::create(
                 'Title',
-                _t('Placeable.TITLE', 'Title')
+                _t('PlaceableObject.TITLE', 'Title')
             )
         );
         $this->extend('updateCMSPageFields', $fields);
@@ -88,8 +88,10 @@ class PlaceableObject extends DataObject
         $fields->removeByName('PresetID');
         $fields->addFieldToTab(
             'Root.Main',
-            ReadonlyField::create('PresetName','Preset')
-                ->setValue($this->Preset()->Title)
+            ReadonlyField::create(
+                'PresetName',
+                _t('PlaceableObject.PRESET', 'Preset')
+            )->setValue($this->Preset()->Title)
         );
         $this->extend('updateCMSFields', $fields);
         return $fields;
@@ -103,14 +105,14 @@ class PlaceableObject extends DataObject
     public function getLayout()
     {
         $page = $this->CurrentPage;
-        $custom_template = ($this->Style ? '_'.$this->Style : '');
-        $page_type = ($page->ClassName ? '_'.$page->ClassName : '');
-        $class_name = $this->ClassName;
+        $customTemplate = ($this->Style ? '_'.$this->Style : '');
+        $pageType = ($page->ClassName ? '_'.$page->ClassName : '');
+        $className = $this->ClassName;
         $templates = array(
-            $class_name.$page_type.$custom_template,
-            $class_name.$custom_template,
-            $class_name.$page_type,
-            $class_name,
+            $className.$pageType.$custom_template,
+            $className.$customTemplate,
+            $className.$pageType,
+            $className,
             'DefaultPlacement'
         );
         $this->extend('updateLayout', $templates);
@@ -226,7 +228,7 @@ class PlaceableObject extends DataObject
     public function getSubClassNames()
     {
         $classes = array();
-        $kill_ancestors = array();
+        $killAncestors = array();
         // make it easier to unset values
         foreach(ClassInfo::subclassesFor($this->ClassName) as $class) {
             $classes[$class] = $class;
@@ -235,7 +237,7 @@ class PlaceableObject extends DataObject
         unset(
             $classes['PlaceableObject'],
             $classes['BlockObject'],
-            $classes['SectionObject']
+            $classes['RegionObject']
         );
 
         // figure out if there are any classes we don't want to appear
@@ -253,15 +255,15 @@ class PlaceableObject extends DataObject
             // do any of the progeny want to hide an ancestor?
             if($ancestor_to_hide = $instance->stat('hide_ancestor')) {
                 // note for killing later
-                $kill_ancestors[] = $ancestor_to_hide;
+                $killAncestors[] = $ancestor_to_hide;
             }
         }
 
         // If any of the descendents don't want any of the elders to show up,
         // cruelly render the elders surplus to requirements
-        if($kill_ancestors) {
-            $kill_ancestors = array_unique($kill_ancestors);
-            foreach($kill_ancestors as $mark) {
+        if($killAncestors) {
+            $killAncestors = array_unique($killAncestors);
+            foreach($killAncestors as $mark) {
                 unset($classes[$mark]);
             }
         }
@@ -296,8 +298,8 @@ class PlaceableObject extends DataObject
         if ($this->controller) {
             return $this->controller;
         }
-        foreach (array_reverse(ClassInfo::ancestry($this->class)) as $ClassName) {
-            $controllerClass = "{$ClassName}_Controller";
+        foreach (array_reverse(ClassInfo::ancestry($this->class)) as $className) {
+            $controllerClass = "{$className}_Controller";
             if (class_exists($controllerClass)) {
                 break;
             }
@@ -320,7 +322,7 @@ class PlaceableObject extends DataObject
         $i18nStyles = array();
         if ($styles) {
             foreach ($styles as $key => $label) {
-                $i18nStyles[$key] = _t('Placeable.STYLE'.strtoupper($key), $label);
+                $i18nStyles[$key] = _t('PlaceableObject.STYLE'.strtoupper($key), $label);
             }
         }
         return $i18nStyles;

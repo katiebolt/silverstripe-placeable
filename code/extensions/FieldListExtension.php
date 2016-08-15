@@ -1,6 +1,6 @@
 <?php
 /**
- * Description
+ * Adds push methods to help add multiple fields to a fieldlist
  *
  * @package silverstripe
  * @subpackage mysite

@@ -8,12 +8,18 @@
 class PlacementsAdmin extends ModelAdmin
 {
     /**
+     * Menu icon for Left and Main CMS
+     * @var string
+     */
+    private static $menu_icon = 'silverstripe-placeable/img/icon.png';
+
+    /**
      * Managed data objects for CMS
      * @var array
      */
     private static $managed_models = array(
         'PlaceablePageType',
-        'SectionObject_Preset',
+        'RegionObject_Preset',
         'BlockObject_Preset'
     );
 
@@ -21,11 +27,11 @@ class PlacementsAdmin extends ModelAdmin
      * URL Path for CMS
      * @var string
      */
-    private static $url_segment = 'placeable';
+    private static $url_segment = 'presetmanager';
 
     /**
      * Menu title for Left and Main CMS
      * @var string
      */
-    private static $menu_title = 'Placeable';
+    private static $menu_title = 'Preset manager';
 }

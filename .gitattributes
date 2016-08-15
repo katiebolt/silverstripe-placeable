@@ -1,2 +1,6 @@
 /.gitignore export-ignore
 /.gitattributes export-ignore
+/gemfile export-ignore
+/gemfile.lock export-ignore
+/config.rb export-ignore
+/scss/ export-ignore

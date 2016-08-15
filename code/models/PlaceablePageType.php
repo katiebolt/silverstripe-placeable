@@ -24,9 +24,9 @@ class PlaceablePageType extends DataObject
      * @var array
      */
     private static $db = array(
-        'Title' => 'text',
-        'Description' => 'text',
-        'HasMain' => 'boolean'
+        'Title' => 'Varchar(17)',
+        'Description' => 'Text',
+        'HasMain' => 'Boolean'
     );
 
     /**
@@ -50,7 +50,7 @@ class PlaceablePageType extends DataObject
      * @var array
      */
     private static $many_many = array(
-        'Sections' => 'SectionObject_Preset'
+        'Regions' => 'RegionObject_Preset'
     );
 
     /**
@@ -58,7 +58,7 @@ class PlaceablePageType extends DataObject
      * @var array
      */
     private static $many_many_extraFields = array(
-        'Sections' => array(
+        'Regions' => array(
             'Sort' => 'Int'
         )
     );
@@ -92,9 +92,18 @@ class PlaceablePageType extends DataObject
         $fields->addFieldsToTab(
             'Root.Main',
             array(
-                TextField::create('Title'),
-                TextField::create('Description'),
-                UploadField::create('Icon')
+                TextField::create(
+                    'Title',
+                    _t('PlaceablePageType.TITLE', 'Title')
+                )->setMaxLength(17),
+                TextField::create(
+                    'Description',
+                    _t('PlaceablePageType.DECRIPTION', 'Description')
+                ),
+                UploadField::create(
+                    'Icon',
+                    _t('PlaceablePageType.ICON', 'Icon')
+                )
             )
         );
 
@@ -102,20 +111,20 @@ class PlaceablePageType extends DataObject
             'Root.Pages',
             GridField::create(
                 'Pages',
-                'Pages',
+                _t('PlaceablePageType.PAGES', 'Pages'),
                 $this->Pages()
             )
         );
 
         $fields->addFieldToTab(
-            'Root.Sections',
+            'Root.Regions',
             GridField::create(
-                'Sections',
-                'Sections',
-                $this->Sections(),
+                'Regions',
+                _t('PlaceablePageType.SECTIONS', 'Regions'),
+                $this->Regions(),
                 GridfieldHelper::MultiClass(
-                    $this->Sections(),
-                    singleton('SectionObject')->SubClassPresets
+                    $this->Regions(),
+                    singleton('RegionObject')->SubClassPresets
                 )
             )
         );
@@ -130,13 +139,13 @@ class PlaceablePageType extends DataObject
         parent::onBeforeWrite();
         // Check that PlaceableObject with is_main has been set.
         $this->HasMain = false;
-        foreach ($this->Sections() as $Section) {
-            if ($Section->IsMain) {
+        foreach ($this->Regions() as $Region) {
+            if ($Region->IsMain) {
                 $this->HasMain = true;
                 continue;
             }
-            if ($Section->Blocks()->exists() && $Section->Blocks()) {
-                foreach ($Section->Blocks() as $Block) {
+            if ($Region->Blocks()->exists() && $Region->Blocks()) {
+                foreach ($Region->Blocks() as $Block) {
                     if ($Block->IsMain) {
                         $this->HasMain = true;
                         continue;

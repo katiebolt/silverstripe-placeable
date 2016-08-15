@@ -1,5 +1,5 @@
 <% if Placements %>
-    <div class='sections'>
+    <div class='regions'>
         <% loop Placements %>
             {$DebugInfo}
             {$Layout}

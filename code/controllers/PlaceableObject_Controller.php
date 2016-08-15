@@ -13,15 +13,15 @@ class PlaceableObject_Controller extends Controller
     protected $PlaceableObject;
 
     /*
-     * @param Section $PlaceableObject
+     * @param Region $PlaceableObject
      */
      public function __contruct($PlaceableObject = null)
      {
          if ($PlaceableObject) {
+             Debug::dump($PlaceableObject);
              $this->PlaceableObject = $PlaceableObject;
              $this->failover = $PlaceableObject;
          }
-         $this->CurrentPage = Controller::curr();
          parent::__contruct();
      }
 

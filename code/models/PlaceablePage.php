@@ -26,7 +26,7 @@ class PlaceablePage extends Page
      * @var array
      */
     private static $many_many = array(
-        'Sections' => 'SectionObject'
+        'Regions' => 'RegionObject'
     );
 
     /**
@@ -34,7 +34,7 @@ class PlaceablePage extends Page
      * @var array
      */
     private static $many_many_extraFields = array(
-        'Sections' => array(
+        'Regions' => array(
             'Sort' => 'Int',
             'Display' => 'Boolean'
         )
@@ -56,29 +56,29 @@ class PlaceablePage extends Page
                         '<p class="message warning">'._t('Placeable.DEVNOTE', 'This area is only visible during development and is intended to help debug.').'</p>'
                     ),
                     GridField::create(
-                        'Sections',
-                        _t('Placeable.SECTIONS', 'Sections'),
-                        $this->Sections(),
+                        'Regions',
+                        _t('PlaceablePage.SECTIONS', 'Regions'),
+                        $this->Regions(),
                         GridFieldConfig_RecordEditor::create()
                     )
                 )
             );
         }
-        foreach ($this->PageFields as $Section) {
+        foreach ($this->PageFields as $Region) {
             $fields->addFieldToTab(
-                "Root.{$Section->Type}",
+                "Root.{$Region->Type}",
                 HeaderField::create(
-                    "header[$Section->Type]",
-                    $Section->Title
+                    "header[$Region->Type]",
+                    $Region->Title
                 )
             );
-            foreach ($Section->Fields as $Field) {
+            foreach ($Region->Fields as $Field) {
                 $fields->addFieldToTab(
-                    "Root.{$Section->Type}",
+                    "Root.{$Region->Type}",
                     $Field
                 );
             }
-            foreach ($Section->Blocks as $Block) {
+            foreach ($Region->Blocks as $Block) {
                 $blockfields = CompositeField::create(
                     HeaderField::create(
                         "header[$Block->Type]",
@@ -89,7 +89,7 @@ class PlaceablePage extends Page
                     $blockfields->push($Field);
                 }
                 $fields->addFieldToTab(
-                    "Root.{$Section->Type}",
+                    "Root.{$Region->Type}",
                     $blockfields
                 );
             }
@@ -104,15 +104,31 @@ class PlaceablePage extends Page
     public function getSettingsFields()
     {
         $fields = parent::getSettingsFields();
-        $fields->addFieldToTab(
-            'Root',
-            DropdownField::create(
-                'PageTypeID',
-                'Placeable page type',
-                PlaceablePageType::get()->map('ID','Title'),
-                $this->PageType()
+        $fields->removeByName('ClassName');
+        $PageTypes = array();
+        foreach ($this->getClassDropdown() as $classKey => $classValue) {
+            if ($classKey == 'PlaceablePage') {
+                foreach (PlaceablePageType::get()->map('ID','Title') as $placeableKey => $placeableValue) {
+                    $PageTypes["$classKey-$placeableKey"] = $placeableValue;
+                }
+            } else {
+                $PageTypes["$classKey-0"] = $classValue;
+            }
+
+        }
+        $fields->addFieldsToTab(
+            'Root.Settings',
+            array(
+                DropdownField::create(
+                    'PageType',
+                    _t('PlaceablePage.PAGETYPE', 'Page type'),
+                    $PageTypes
+                ),
+                HiddenField::create('ClassName','ClassName'),
+                HiddenField::create('PageTypeID','PageTypeID'),
+
             ),
-            'ClassName'
+            'ParentType'
         );
         return $fields;
     }
@@ -120,39 +136,39 @@ class PlaceablePage extends Page
     public function getPageFields()
     {
         $allfields = arrayList::create();
-        foreach ($this->Sections()->sort('Sort ASC') as $Section) {
-            $newsectionfields = arrayList::create();
-            $origsectionfields = $Section->getCMSPageFields();
-            if (!$origsectionfields->count() && !$Section->Blocks()->count()) {
+        foreach ($this->Regions()->sort('Sort ASC') as $Region) {
+            $newRegionFields = arrayList::create();
+            $origRegionFields = $Region->getCMSPageFields();
+            if (!$origRegionFields->count() && !$Region->Blocks()->count()) {
                 continue;
             }
-            foreach ($origsectionfields as $Field) {
-                $Field->value = $Section->{$Field->name};
+            foreach ($origRegionFields as $Field) {
+                $Field->value = $Region->{$Field->name};
                 $Field->original_name = $Field->name;
-                $Field->name = "{$Field->name}_{$Section->ID}";
-                $newsectionfields->push($Field);
+                $Field->name = "{$Field->name}_{$Region->ID}";
+                $newRegionFields->push($Field);
             }
-            $newsectionblocks = arrayList::create();
-            if ($Section->Blocks()->exists()) {
-                foreach ($Section->Blocks()->sort('Sort ASC') as $Block) {
-                    $newblockfields = arrayList::create();
-                    $origblockfields = $Block->getCMSPageFields();
-                    if (!$origblockfields->count()) {
+            $newRegionBlocks = arrayList::create();
+            if ($Region->hasMethod('Blocks') && $Region->Blocks()->exists()) {
+                foreach ($Region->Blocks()->sort('Sort ASC') as $Block) {
+                    $newBlockFields = arrayList::create();
+                    $origBlockFields = $Block->getCMSPageFields();
+                    if (!$origBlockFields->count()) {
                         continue;
                     }
-                    foreach ($origblockfields as $Field) {
+                    foreach ($origBlockFields as $Field) {
                         $Field->value = $Block->{$Field->name};
                         $Field->original_name = $Field->name;
                         $Field->name = "{$Field->name}_{$Block->ID}";
-                        $newblockfields->push($Field);
+                        $newBlockFields->push($Field);
                     }
-                    $newsectionblocks->push(
+                    $newRegionBlocks->push(
                         arrayData::create(
                             array(
                                 'DataObject' => $Block,
                                 'Type' => $Block->Preset()->Type,
                                 'Title' => $Block->Preset()->Title,
-                                'Fields' => $newblockfields
+                                'Fields' => $newBlockFields
                             )
                         )
                     );
@@ -161,11 +177,11 @@ class PlaceablePage extends Page
             $allfields->push(
                 arrayData::create(
                     array(
-                        'DataObject' => $Section,
-                        'Type' => $Section->Preset()->Type,
-                        'Title' => $Section->Preset()->Title,
-                        'Fields' => $newsectionfields,
-                        'Blocks' => $newsectionblocks
+                        'DataObject' => $Region,
+                        'Type' => $Region->Preset()->Type,
+                        'Title' => $Region->Preset()->Title,
+                        'Fields' => $newRegionFields,
+                        'Blocks' => $newRegionBlocks
                     )
                 )
             );
@@ -179,15 +195,57 @@ class PlaceablePage extends Page
     public function onAfterWrite()
     {
         parent::onAfterWrite();
-        foreach ($this->PageFields as $Section) {
-            $SectionObject = $Section->DataObject;
-            foreach ($Section->Fields as $Field) {
+        // build relationships
+        foreach ($this->Presets as $Preset) {
+            $ClassName = $Preset->ObjectClassName;
+            // Find existing relationship
+            $Region = $this->Regions()->find('PresetID', $Preset->ID);
+            // Find existing dataobject if relationship doesn't exist and shares it instance
+            if (!$Region && $Preset->Instance == 'shared') {
+                $Region = DataObject::get_one(
+                    $ClassName,
+                    array(
+                        'PresetID' => $Preset->ID
+                    )
+                );
+            }
+            // Create new dataobject if nothing else exists
+            if (!$Region) {
+                $Region = $ClassName::create();
+            }
+            $Region->PresetID = $Preset->ID;
+            $Region->forceChange()->write();
+            $this->Regions()->add(
+                $Region,
+                array(
+                    'Sort' => $Preset->Sort,
+                    'Display' => true
+                )
+            );
+        }
+        // Hide Regions that no longer exist due to a change in page type or its settings.
+        // We don't delete it just in case its reverted back.
+        foreach ($this->Regions() as $Region) {
+            $Preset = $this->Presets->find('ID', $Region->PresetID);
+            if (!$Preset) {
+                $this->Regions()->add(
+                    $Region,
+                    array(
+                        'Display' => false
+                    )
+                );
+            }
+        }
+        // Save fields to related regions and blocks
+        foreach ($this->PageFields as $Region) {
+            $RegionObject = $Region->DataObject;
+            foreach ($Region->Fields as $Field) {
                 if (isset($_POST["$Field->name"])) {
-                    $SectionObject->{$Field->original_name} = $_POST["$Field->name"];
+                    $RegionObject->{$Field->original_name} = $_POST["$Field->name"];
                 }
             }
-            $SectionObject->forceChange()->write();
-            foreach ($Section->Blocks as $Block) {
+            $RegionObject->forceChange()->write();
+            foreach ($Region->Blocks as $Block) {
                 $BlockObject = $Block->DataObject;
                 foreach ($Block->Fields as $Field) {
                     if (isset($_POST["$Field->name"])) {
@@ -197,72 +255,30 @@ class PlaceablePage extends Page
                 $BlockObject->forceChange()->write();
             }
         }
-        // $this->writeRelations();
-        // build relationships
-        foreach ($this->Presets as $Preset) {
-            $ClassName = $Preset->ObjectClassName;
-            // Find existing relationship
-            $Section = $this->Sections()->find('PresetID', $Preset->ID);
-            // Find existing dataobject if relationship doesn't exist and shares it instance
-            if (!$Section && $Preset->Instance == 'shared') {
-                $Section = DataObject::get_one(
-                    $ClassName,
-                    array(
-                        'PresetID' => $Preset->ID
-                    )
-                );
-            }
-            // Create new dataobject if nothing else exists
-            if (!$Section) {
-                $Section = $ClassName::create();
-            }
-            $Section->PresetID = $Preset->ID;
-            $Section->forceChange()->write();
-            $this->Sections()->add(
-                $Section,
-                array(
-                    'Sort' => $Preset->Sort,
-                    'Display' => true
-                )
-            );
-        }
-        // Hide Sections that no longer exist due to a change in page type or its settings.
-        // We don't delete it just in case its reverted back.
-        foreach ($this->Sections() as $Section) {
-            $Preset = $this->Presets->find('ID', $Section->PresetID);
-            if (!$Preset) {
-                $this->Sections()->add(
-                    $Section,
-                    array(
-                        'Display' => false
-                    )
-                );
-            }
-        }
     }
 
     /**
-     * Gets preset sections from page type
+     * Gets preset regions from page type
      *
      * @return arrayList
      **/
     public function getPresets()
     {
         $Presets = arrayList::create();
-        foreach ($this->PageType()->Sections()->sort('Sort ASC') as $Section) {
-            $Presets->Push($Section);
+        foreach ($this->PageType()->Regions()->sort('Sort ASC') as $Region) {
+            $Presets->Push($Region);
         }
         return $Presets;
     }
 
     /**
-     * Gets sections for display
+     * Gets regions for display
      *
      * @return ManyManyList
      **/
     public function getPlacements()
     {
-        return $this->Sections()->filter(
+        return $this->Regions()->filter(
            array(
                'Display' => true
            )
@@ -284,18 +300,18 @@ class PlaceablePage_Controller extends Page_Controller
     }
 
     /**
-     * Handles section attached to a page
-     * Assumes URLs in the following format: <URLSegment>/placement/<section-id>.
+     * Handles region attached to a page
+     * Assumes URLs in the following format: <URLSegment>/placement/<region-id>.
      *
      * @return RequestHandler
      */
     public function placement()
     {
         if ($ID = $this->getRequest()->param('ID')) {
-            $sections = $this->data()->Sections();
-            if ($section = $sections->find(array('ID' => $ID))) {
+            $regions = $this->data()->Regions();
+            if ($region = $regions->find(array('ID' => $ID))) {
                 if ($action = $this->getRequest()->param('ACTION')) {
-                    return $section->getController()->$action();
+                    return $region->getController()->$action();
                 }
             }
         }

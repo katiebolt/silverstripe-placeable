@@ -1,6 +1,6 @@
 <?php
 /**
- * Description
+ * Creates a preset model to define placeableobjects
  *
  * @package silverstripe
  * @subpackage silverstripe-placeable
@@ -76,17 +76,17 @@ class PlaceableObject_Preset extends DataObject
                 'ajaxSafe' => true
             )
         );
-        $none_string = _t('Placeable.NONE', 'None');
+        $none_string = _t('PlaceableObject_Preset.NONE', 'None');
         $fields->addFieldsToTab(
             'Root.Main',
             array(
                 TextField::create(
                     'Title',
-                    _t('Placeable.TITLE', 'Title')
+                    _t('PlaceableObject_Preset.TITLE', 'Title')
                 ),
                 DropdownField::create(
                     'Instance',
-                    'Instance',
+                    _t('PlaceableObject_Preset.INSTANCE', 'Instance'),
                     singleton('PlaceableObject_Preset')->dbObject('Instance')->enumValues()
                 )
             )
@@ -128,7 +128,7 @@ class PlaceableObject_Preset extends DataObject
      */
     public function canCreate($member = null)
     {
-        return Permission::check('EDIT_PLACEMENTS', 'any', $member);
+        return Permission::check('EDIT_PRESETS', 'any', $member);
     }
 
     /**
@@ -137,7 +137,7 @@ class PlaceableObject_Preset extends DataObject
      */
     public function canEdit($member = null)
     {
-        return Permission::check('EDIT_PLACEMENTS', 'any', $member);
+        return Permission::check('EDIT_PRESETS', 'any', $member);
     }
 
     /**
@@ -146,7 +146,7 @@ class PlaceableObject_Preset extends DataObject
      */
     public function canDelete($member = null)
     {
-        return Permission::check('EDIT_PLACEMENTS', 'any', $member);
+        return Permission::check('EDIT_PRESETS', 'any', $member);
     }
 
     /**
@@ -155,6 +155,6 @@ class PlaceableObject_Preset extends DataObject
      */
     public function canView($member = null)
     {
-        return Permission::check('EDIT_PLACEMENTS', 'any', $member);
+        return Permission::check('EDIT_PRESETS', 'any', $member);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Description
+ * A abstract class.
  *
  * @package silverstripe
  * @subpackage silverstripe-placeable
