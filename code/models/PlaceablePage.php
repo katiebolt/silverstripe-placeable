@@ -97,42 +97,6 @@ class PlaceablePage extends Page
         return $fields;
     }
 
-    /**
-     * Settings Tab Fields
-     * @return FieldList
-     */
-    public function getSettingsFields()
-    {
-        $fields = parent::getSettingsFields();
-        $fields->removeByName('ClassName');
-        $PageTypes = array();
-        foreach ($this->getClassDropdown() as $classKey => $classValue) {
-            if ($classKey == 'PlaceablePage') {
-                foreach (PlaceablePageType::get()->map('ID','Title') as $placeableKey => $placeableValue) {
-                    $PageTypes["$classKey-$placeableKey"] = $placeableValue;
-                }
-            } else {
-                $PageTypes["$classKey-0"] = $classValue;
-            }
-
-        }
-        $fields->addFieldsToTab(
-            'Root.Settings',
-            array(
-                DropdownField::create(
-                    'PageType',
-                    _t('PlaceablePage.PAGETYPE', 'Page type'),
-                    $PageTypes
-                ),
-                HiddenField::create('ClassName','ClassName'),
-                HiddenField::create('PageTypeID','PageTypeID'),
-
-            ),
-            'ParentType'
-        );
-        return $fields;
-    }
-
     public function getPageFields()
     {
         $allfields = arrayList::create();

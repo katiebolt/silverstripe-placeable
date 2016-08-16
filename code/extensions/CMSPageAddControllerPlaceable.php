@@ -14,21 +14,34 @@ class CMSPageAddControllerPlaceable extends Extension
     public function updatePageOptions(FieldList $fields)
     {
         $pageTypeField = $fields->fieldByName('PageType');
-        $pageTypes = $pageTypeField->getSource();
-        $placeablePageTypes = PlaceablePageType::get();
-        // unset($pageTypes['Page'],$pageTypes['PlaceablePage']);
-        unset($pageTypes['Page']);
-        $pageTypeField->setSource($pageTypes);
-        $types = array();
-        foreach ($placeablePageTypes as $type) {
-            $types[$type->ID] = "<span class='page-icon'></span><strong class='title'>$type->Title</strong><span class='description'>$type->Description</span>";
+        foreach ($pageTypeField->getSource() as $classKey => $classValue) {
+            if ($classKey == 'PlaceablePage') {
+                foreach (PlaceablePageType::get() as $type) {
+                    $PageTypes["$classKey-$type->ID"] = "<span class='page-icon'></span><strong class='title'>$type->Title</strong><span class='description'>$type->Description</span>";
+                }
+            } else {
+                $PageTypes["$classKey-0"] = $classValue;
+            }
         }
-        $fields->push(
+
+        $numericLabelTmpl = '<span class="step-label"><span class="flyout">%d</span><span class="arrow"></span><span class="title">%s</span></span>';
+
+        $fields->removeByName(
+            array(
+                'PageType',
+                'RestrictedNote'
+            )
+        );
+        $fields->addFields(
+            array(
                 OptionsetField::create(
-                    'PlaceablePageTypeID',
-                    _t('Placeable.CHOOSEPRESET', 'Choose preset'),
-                    $types
-                )
+                    'PageTypeFake',
+                    sprintf($numericLabelTmpl, 2, _t('CMSMain.ChoosePageType', 'Choose page type')),
+                    $PageTypes
+                ),
+                HiddenField::create('PageType','PageType'),
+                HiddenField::create('PageTypeID','PageTypeID')
+            )
         );
         return $fields;
     }

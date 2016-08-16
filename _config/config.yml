@@ -17,6 +17,9 @@ LeftAndMain:
     - placeable/js/Placeable.CMSMain.js
   extra_requirements_css:
     - placeable/css/Placeable.CMSMain.css
+SiteTree:
+  extensions:
+    - SiteTreePlaceable
 FieldList:
   extensions:
     - FieldListExtension
