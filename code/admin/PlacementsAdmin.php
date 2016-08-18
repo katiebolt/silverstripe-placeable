@@ -24,6 +24,12 @@ class PlacementsAdmin extends ModelAdmin
     );
 
     /**
+     * Remove all data objects from being imported
+     * @var array
+     */
+    private static $model_importers = array();
+
+    /**
      * URL Path for CMS
      * @var string
      */
@@ -34,4 +40,20 @@ class PlacementsAdmin extends ModelAdmin
      * @var string
      */
     private static $menu_title = 'Preset manager';
+
+    /**
+     * @param Int $id
+     * @param FieldList $fields
+     * @return Form
+     */
+    public function getEditForm($id = null, $fields = null)
+    {
+        $form = parent::getEditForm($id, $fields);
+        $form->Fields()
+            ->fieldByName($this->sanitiseClassName($this->modelClass))
+            ->getConfig()
+            ->removeComponentsByType('GridFieldExportButton')
+            ->removeComponentsByType('GridFieldPrintButton');
+        return $form;
+    }
 }
