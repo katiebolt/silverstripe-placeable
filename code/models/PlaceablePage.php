@@ -100,38 +100,32 @@ class PlaceablePage extends Page
     public function getPageFields()
     {
         $allfields = arrayList::create();
-        foreach ($this->Regions()->sort('Sort ASC') as $Region) {
+        foreach ($this->Regions()->sort('Sort ASC') as $region) {
             $newRegionFields = arrayList::create();
-            $origRegionFields = $Region->getCMSPageFields();
-            if (!$origRegionFields->count() && !$Region->Blocks()->count()) {
+            $origRegionFields = $region->getCMSPageFields();
+            if (!$origRegionFields->count() && !$region->Blocks()->count()) {
                 continue;
             }
-            foreach ($origRegionFields as $Field) {
-                $Field->value = $Region->{$Field->name};
-                $Field->original_name = $Field->name;
-                $Field->name = "{$Field->name}_{$Region->ID}";
-                $newRegionFields->push($Field);
+            foreach ($origRegionFields as $field) {
+                $newRegionFields->push($this->BuildPageField($field, $region));
             }
             $newRegionBlocks = arrayList::create();
-            if ($Region->hasMethod('Blocks') && $Region->Blocks()->exists()) {
-                foreach ($Region->Blocks()->sort('Sort ASC') as $Block) {
+            if ($region->hasMethod('Blocks') && $region->Blocks()->exists()) {
+                foreach ($region->Blocks()->sort('Sort ASC') as $block) {
                     $newBlockFields = arrayList::create();
-                    $origBlockFields = $Block->getCMSPageFields();
+                    $origBlockFields = $block->getCMSPageFields();
                     if (!$origBlockFields->count()) {
                         continue;
                     }
-                    foreach ($origBlockFields as $Field) {
-                        $Field->value = $Block->{$Field->name};
-                        $Field->original_name = $Field->name;
-                        $Field->name = "{$Field->name}_{$Block->ID}";
-                        $newBlockFields->push($Field);
+                    foreach ($origBlockFields as $field) {
+                        $newBlockFields->push($this->BuildPageField($field, $block));
                     }
                     $newRegionBlocks->push(
                         arrayData::create(
                             array(
-                                'DataObject' => $Block,
-                                'Type' => $Block->Preset()->Type,
-                                'Title' => $Block->Preset()->Title,
+                                'DataObject' => $block,
+                                'Type' => $block->Preset()->Type,
+                                'Title' => $block->Preset()->Title,
                                 'Fields' => $newBlockFields
                             )
                         )
@@ -141,9 +135,9 @@ class PlaceablePage extends Page
             $allfields->push(
                 arrayData::create(
                     array(
-                        'DataObject' => $Region,
-                        'Type' => $Region->Preset()->Type,
-                        'Title' => $Region->Preset()->Title,
+                        'DataObject' => $region,
+                        'Type' => $region->Preset()->Type,
+                        'Title' => $region->Preset()->Title,
                         'Fields' => $newRegionFields,
                         'Blocks' => $newRegionBlocks
                     )
@@ -151,6 +145,15 @@ class PlaceablePage extends Page
             );
         }
         return $allfields;
+    }
+
+    public function BuildPageField($field, $record)
+    {
+        $field->value = $record->{$field->name};
+        $field->original_name = $field->name;
+        $field->record = $record; // assign parent record if it accepts it.  Used in uploadfields
+        $field->name = "{$field->name}_{$record->ID}";
+        return $field;
     }
 
     /**
