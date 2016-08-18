@@ -138,7 +138,7 @@ class BlocksRegion_Preset extends RegionObject_Preset
                 'Blocks',
                 'Blocks',
                 $this->Blocks(),
-                GridfieldHelper::MultiClass(
+                GridFieldConfig_MultiClass::create(
                     $this->Blocks(),
                     singleton('BlockObject')->SubClassPresets
                 )

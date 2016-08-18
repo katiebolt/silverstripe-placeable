@@ -122,7 +122,7 @@ class PlaceablePageType extends DataObject
                 'Regions',
                 _t('PlaceablePageType.SECTIONS', 'Regions'),
                 $this->Regions(),
-                GridfieldHelper::MultiClass(
+                GridFieldConfig_MultiClass::create(
                     $this->Regions(),
                     singleton('RegionObject')->SubClassPresets
                 )
