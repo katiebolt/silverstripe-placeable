@@ -70,7 +70,7 @@ class PlaceablePageType extends DataObject
      */
     private static $summary_fields = array(
         'Title' => 'Title',
-        'Description' => 'Title',
+        'Description' => 'Description',
         'HasMain.Nice' => 'Main is set'
     );
 
