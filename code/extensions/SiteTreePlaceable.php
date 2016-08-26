@@ -3,7 +3,7 @@
  * Description
  *
  * @package silverstripe
- * @subpackage mysite
+ * @subpackage silverstripe-placeable
  */
 class SiteTreePlaceable extends DataExtension
 {
@@ -15,7 +15,7 @@ class SiteTreePlaceable extends DataExtension
          // stores text version of page type so we can default to it in the page type dropdown in settings
         'PageTypeFake' => 'Text'
     );
-    
+
     /**
      * Update Settings Tab Fields
      * @return FieldList

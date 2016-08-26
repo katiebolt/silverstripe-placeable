@@ -39,7 +39,8 @@ class RegionObject extends PlaceableObject
 }
 class RegionObject_Controller extends PlaceableObject_Controller
 {
-    public function init() {
+    public function init()
+    {
         parent::init();
     }
 }

@@ -268,17 +268,27 @@ class PlaceablePage_Controller extends Page_Controller
 
     /**
      * Handles region attached to a page
-     * Assumes URLs in the following format: <URLSegment>/placement/<region-id>.
+     * Assumes URLs in the following format: <URLSegment>/placement/<placeableObject-id>.
      *
      * @return RequestHandler
      */
     public function placement()
     {
         if ($ID = $this->getRequest()->param('ID')) {
-            $regions = $this->data()->Regions();
-            if ($region = $regions->find(array('ID' => $ID))) {
+            $regions = $this->Regions();
+            $placeableObjects = arrayList::create();
+            foreach ($regions as $region) {
+                $placeableObjects->push($region);
+                if ($region->hasMethod('Blocks') && $region->Blocks()->exists()) {
+                    foreach ($region->Blocks() as $block) {
+                        $placeableObjects->push($block);
+                    }
+                }
+            }
+
+            if ($placeableObjects = $placeableObjects->find('ID', $ID)) {
                 if ($action = $this->getRequest()->param('ACTION')) {
-                    return $region->getController()->$action();
+                    return $placeableObjects->getController()->$action();
                 }
             }
         }

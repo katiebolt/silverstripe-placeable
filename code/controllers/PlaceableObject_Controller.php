@@ -8,21 +8,21 @@
 class PlaceableObject_Controller extends Controller
 {
     /**
-     * @var $PlaceableObject
+     * @var $placeableobject
      */
-    protected $PlaceableObject;
+    protected $placeableobject;
 
     /*
-     * @param Region $PlaceableObject
+     * @param dataobject $placeableobject
      */
-     public function __contruct($PlaceableObject = null)
-     {
-         if ($PlaceableObject) {
-             $this->PlaceableObject = $PlaceableObject;
-             $this->failover = $PlaceableObject;
-         }
-         parent::__contruct();
-     }
+    public function __construct($placeableobject = null)
+    {
+        if ($placeableobject) {
+            $this->placeableobject = $placeableobject;
+            $this->failover = $placeableobject;
+        }
+        parent::__construct();
+    }
 
      public function index()
      {
@@ -30,7 +30,6 @@ class PlaceableObject_Controller extends Controller
      }
 
      public function init() {
-         return;
      }
 
      /**
@@ -40,8 +39,8 @@ class PlaceableObject_Controller extends Controller
      */
     public function Link($action = null)
     {
-        $id = ($this->PlaceableObject) ? $this->PlaceableObject->ID : null;
-        $segment = Controller::join_links('PlaceableObject', $id, $action);
+        $id = ($this->placeableobject) ? $this->placeableobject->ID : null;
+        $segment = Controller::join_links('placement', $id, $action);
         if ($page = Director::get_current_page()) {
             return $page->Link($segment);
         }
@@ -49,7 +48,7 @@ class PlaceableObject_Controller extends Controller
     }
 
     /**
-     * Access current page scope from PlaceableObject templates with $CurrentPage
+     * Access current page scope from placeableobject templates with $CurrentPage
      *
      * @return Controller
      */
@@ -61,8 +60,8 @@ class PlaceableObject_Controller extends Controller
     /**
      * @return Placement
      */
-    public function getPlacement()
+    public function getPlaceableObject()
     {
-     return $this->PlaceableObject;
+     return $this->placeableobject;
     }
 }

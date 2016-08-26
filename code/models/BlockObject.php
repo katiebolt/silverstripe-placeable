@@ -39,7 +39,8 @@ class BlockObject extends PlaceableObject
 }
 class BlockObject_Controller extends PlaceableObject_Controller
 {
-    public function init() {
+    public function init()
+    {
         parent::init();
     }
 }

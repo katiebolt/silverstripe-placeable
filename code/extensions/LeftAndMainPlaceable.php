@@ -3,7 +3,7 @@
  * Assigns new placeable pages to a page type
  *
  * @package silverstripe
- * @subpackage mysite
+ * @subpackage silverstripe-placeable
  */
 class LeftAndMainPlaceable extends Extension
 {

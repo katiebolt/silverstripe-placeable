@@ -8,11 +8,6 @@
 class PlaceableObject_Preset extends DataObject
 {
     /**
-     * @var PlaceableObject
-     */
-    protected $PlaceableObject;
-
-    /**
      * Singular name for CMS
      * @var string
      */

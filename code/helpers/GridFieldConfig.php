@@ -3,7 +3,7 @@
  * Description
  *
  * @package silverstripe
- * @subpackage mysite
+ * @subpackage silverstripe-placeable
  */
 class GridFieldConfig_MultiClass extends GridFieldConfig_RelationEditor
 {
