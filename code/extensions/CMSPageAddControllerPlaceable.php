@@ -17,9 +17,8 @@ class CMSPageAddControllerPlaceable extends Extension
         foreach ($pageTypeField->getSource() as $classKey => $classValue) {
             if ($classKey == 'PlaceablePage') {
                 foreach (PlaceablePageType::get() as $type) {
-                    $html = sprintf('<span class="page-icon class-placeable-%d">%s</span><strong class="title">%s</strong><span class="description">%s</span>',
-                        $type->ID,
-                        ($type->Icon()->exists()) ? '<img src="'.$type->Icon()->croppedImage(16,16)->URL.'" />': '',
+                    $html = sprintf('%s<strong class="title">%s</strong><span class="description">%s</span>',
+                        ($type->Icon()->exists()) ? '<img class="page-icon" src="'.$type->Icon()->croppedImage(16,16)->URL.'" />': '<span class="page-icon"></span>',
                         $type->Title,
                         $type->Description
                     );
