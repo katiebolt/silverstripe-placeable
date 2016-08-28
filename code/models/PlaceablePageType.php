@@ -88,7 +88,7 @@ class PlaceablePageType extends DataObject
                 'ajaxSafe' => true
             )
         );
-
+        $fields->removeByName('HasMain');
         $fields->addFieldsToTab(
             'Root.Main',
             array(
