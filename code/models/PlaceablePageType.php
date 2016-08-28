@@ -139,14 +139,14 @@ class PlaceablePageType extends DataObject
         parent::onBeforeWrite();
         // Check that PlaceableObject with is_main has been set.
         $this->HasMain = false;
-        foreach ($this->Regions() as $Region) {
-            if ($Region->IsMain) {
+        foreach ($this->Regions() as $region) {
+            if ($region->IsMain) {
                 $this->HasMain = true;
                 continue;
             }
-            if ($Region->Blocks()->exists() && $Region->Blocks()) {
-                foreach ($Region->Blocks() as $Block) {
-                    if ($Block->IsMain) {
+            if ($region->hasMethod('Blocks') && $region->Blocks()->exists()) {
+                foreach ($region->Blocks() as $block) {
+                    if ($block->IsMain) {
                         $this->HasMain = true;
                         continue;
                     }
@@ -162,8 +162,8 @@ class PlaceablePageType extends DataObject
     {
         parent::onAfterWrite();
         // Update all pages of this page type.
-        foreach ($this->Pages() as $Page){
-            $Page->forceChange()->write();
+        foreach ($this->Pages() as $page){;
+            $page->forceChange()->write();
         }
     }
 

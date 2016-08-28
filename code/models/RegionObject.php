@@ -59,6 +59,14 @@ class RegionObject_Preset extends PlaceableObject_Preset
     private static $plural_name = 'Region Presets';
 
     /**
+     * Belongs_many_many relationship
+     * @var array
+     */
+    private static $belongs_many_many = array(
+        'PageTypes' => 'PlaceablePageType.Regions',
+    );
+
+    /**
      * CMS Fields
      * @return FieldList
      */
@@ -83,5 +91,17 @@ class RegionObject_Preset extends PlaceableObject_Preset
         );
         $this->extend('updateCMSFields', $fields);
         return $fields;
+    }
+
+    /**
+     * Event handler called after writing to the database.
+     */
+    public function onAfterWrite()
+    {
+        parent::onAfterWrite();
+        // Update page types which then updates all pages associated to that page type.
+        foreach ($this->PageTypes() as $type){
+            $type->forceChange()->write();
+        }
     }
 }
