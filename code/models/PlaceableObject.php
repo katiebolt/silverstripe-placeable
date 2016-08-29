@@ -1,4 +1,8 @@
 <?php
+
+use SilverStripe\Forms\SegmentField;
+use SilverStripe\Forms\SegmentFieldModifier\SlugSegmentFieldModifier;
+
 /**
  * A abstract class.  This is extended upon by RegionObject and BlockObject
  *
@@ -65,6 +69,16 @@ class PlaceableObject extends DataObject
             TextField::create(
                 'Title',
                 _t('PlaceableObject.TITLE', 'Title')
+            ),
+            SegmentField::create(
+                'UrlSegment',
+                _t('PlaceableObject.URLSEGMENT', 'Anchor')
+            )
+            ->setPreview($this->UrlSegment)
+            ->setModifiers(
+                array(
+                    SlugSegmentFieldModifier::create()->setDefault('Title')
+                )
             )
         );
         $this->extend('updateCMSPageFields', $fields);
@@ -95,6 +109,19 @@ class PlaceableObject extends DataObject
         );
         $this->extend('updateCMSFields', $fields);
         return $fields;
+    }
+
+    /**
+     * Event handler called before writing to the database.
+     */
+    public function onBeforeWrite()
+    {
+        parent::onBeforeWrite();
+        if ($this->UrlSegment) {
+            $this->UrlSegment = Convert::raw2url($this->UrlSegment);
+        } else {
+            $this->UrlSegment = Convert::raw2url($this->ClassName.'-'.$this->ID);
+        }
     }
 
     /**
