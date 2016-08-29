@@ -5,7 +5,7 @@
  * @package silverstripe
  * @subpackage silverstripe-placeable
  */
-class PlacementsAdmin extends ModelAdmin
+class PresetManagerAdmin extends ModelAdmin
 {
     /**
      * Menu icon for Left and Main CMS
