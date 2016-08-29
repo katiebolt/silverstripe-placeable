@@ -57,15 +57,5 @@ class ContentBlock_Controller extends BlockObject_Controller
 }
 class ContentBlock_Preset extends BlockObject_Preset
 {
-    /**
-     * Singular name for CMS
-     * @var string
-     */
-    private static $singular_name = 'Content';
 
-    /**
-     * Plural name for CMS
-     * @var string
-     */
-    private static $plural_name = 'Content Presets';
 }

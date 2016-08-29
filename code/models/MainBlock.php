@@ -64,18 +64,6 @@ class MainBlock_Controller extends BlockObject_Controller
 class MainBlock_Preset extends BlockObject_Preset
 {
     /**
-     * Singular name for CMS
-     * @var string
-     */
-    private static $singular_name = 'Content';
-
-    /**
-     * Plural name for CMS
-     * @var string
-     */
-    private static $plural_name = 'Content Presets';
-
-    /**
      * Sets main(primary) placeable object.
      * Page types must have one main object set.
      *

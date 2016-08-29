@@ -47,18 +47,6 @@ class BlockObject_Controller extends PlaceableObject_Controller
 class BlockObject_Preset extends PlaceableObject_Preset
 {
     /**
-     * Singular name for CMS
-     * @var string
-     */
-    private static $singular_name = 'Block';
-
-    /**
-     * Plural name for CMS
-     * @var string
-     */
-    private static $plural_name = 'Block Presets';
-
-    /**
      * CMS Fields
      * @return FieldList
      */

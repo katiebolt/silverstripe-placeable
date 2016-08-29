@@ -95,18 +95,6 @@ class BlocksRegion_Controller extends RegionObject_Controller
 class BlocksRegion_Preset extends RegionObject_Preset
 {
     /**
-     * Singular name for CMS
-     * @var string
-     */
-    private static $singular_name = 'Block Region Preset';
-
-    /**
-     * Plural name for CMS
-     * @var string
-     */
-    private static $plural_name = 'Block Region Presets';
-
-    /**
      * Many_many relationship
      * @var array
      */

@@ -47,18 +47,6 @@ class RegionObject_Controller extends PlaceableObject_Controller
 class RegionObject_Preset extends PlaceableObject_Preset
 {
     /**
-     * Singular name for CMS
-     * @var string
-     */
-    private static $singular_name = 'Region';
-
-    /**
-     * Plural name for CMS
-     * @var string
-     */
-    private static $plural_name = 'Region Presets';
-
-    /**
      * Belongs_many_many relationship
      * @var array
      */

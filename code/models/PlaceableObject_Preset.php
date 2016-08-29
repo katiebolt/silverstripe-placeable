@@ -44,7 +44,7 @@ class PlaceableObject_Preset extends DataObject
      */
     private static $summary_fields = array(
         'Title' => 'Title',
-        'ObjectClassName' => 'Type',
+        'singular_name' => 'Type',
         'Style'=> 'Style',
         'Instance' => 'Instance'
     );
@@ -56,6 +56,13 @@ class PlaceableObject_Preset extends DataObject
      * @var boolean
      */
     protected $main = false;
+
+    /**
+     * Stores an class instance of PlaceableObject
+     *
+     * @var static The singleton instance
+     */
+    protected $placeableobject = null;
 
     /**
      * CMS Fields
@@ -115,6 +122,46 @@ class PlaceableObject_Preset extends DataObject
     public function getObjectClassName()
     {
         return str_ireplace('_preset','',$this->ClassName);
+    }
+
+    /**
+     * Gets a class instance of PlaceableObject
+     * @return string
+     */
+    public function getPlaceableObject()
+    {
+        if ($this->placeableobject) {
+            return $this->placeableobject;
+        }
+        $instance = Injector::inst()->get($this->ObjectClassName);
+        $this->placeableobject = $instance;
+        return $instance;
+    }
+
+    /**
+     * Get the user friendly singular name of this preset.
+     *
+     * @return string
+     */
+    public function singular_name() {
+        if ($this->PlaceableObject->i18n_singular_name()) {
+            return $this->PlaceableObject->i18n_singular_name();
+        } else {
+            return parent::singular_name();
+        }
+    }
+
+    /**
+     * Get the user friendly plural name of this preset
+     *
+     * @return string
+     */
+    public function plural_name() {
+        if ($this->PlaceableObject->i18n_plural_name()) {
+            return $this->PlaceableObject->i18n_plural_name();
+        } else {
+            return parent::plural_name();
+        }
     }
 
     /**
