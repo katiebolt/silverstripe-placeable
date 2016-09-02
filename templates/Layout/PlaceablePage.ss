@@ -1,6 +1,6 @@
-<% if Placements %>
+<% if CurrentRegions %>
     <div class='regions'>
-        <% loop Placements %>
+        <% loop CurrentRegions %>
             {$DebugInfo}
             {$Layout}
         <% end_loop %>

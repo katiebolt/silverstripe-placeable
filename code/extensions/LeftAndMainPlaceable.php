@@ -12,8 +12,8 @@ class LeftAndMainPlaceable extends Extension
         if (isset($_POST['PageTypeFake'])) {
             $item->PageTypeFake = $_POST['PageTypeFake'];
         }
-        if (isset($_POST['PlaceablePageTypeID'])) {
-            $item->PageTypeID = $_POST['PlaceablePageTypeID'];
+        if (isset($_POST['PageTypeID'])) {
+            $item->PageTypeID = $_POST['PageTypeID'];
         }
     }
 }

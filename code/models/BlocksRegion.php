@@ -35,7 +35,8 @@ class BlocksRegion extends RegionObject
      */
     private static $many_many_extraFields = array(
         'Blocks' => array(
-            'Sort' => 'Int'
+            'Sort' => 'Int',
+            'Display' => 'Boolean'
         )
     );
 
@@ -82,8 +83,21 @@ class BlocksRegion extends RegionObject
                     'Display' => true
                 )
             );
-            // $this->write();
         }
+    }
+
+    /**
+     * Gets blocks for display
+     *
+     * @return ManyManyList
+     **/
+    public function getCurrentBlocks()
+    {
+        return $this->Blocks()->filter(
+           array(
+               'Display' => true
+           )
+        )->sort('Sort ASC');
     }
 }
 class BlocksRegion_Controller extends RegionObject_Controller

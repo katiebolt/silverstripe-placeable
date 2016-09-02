@@ -1,6 +1,6 @@
-<% if Blocks %>
+<% if CurrentBlocks %>
     <div {$ClassAttr}{$AnchorAttr}>
-        <% loop Blocks %>
+        <% loop CurrentBlocks %>
             {$DebugInfo}
             {$Layout}
         <% end_loop %>

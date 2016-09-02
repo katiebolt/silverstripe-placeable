@@ -11,7 +11,12 @@ class PlaceablePage extends Page
      * Singular name for CMS
      * @var string
      */
-    private static $singular_name = 'Placeable Page';
+    private static $singular_name = 'Page';
+
+    /**
+     * @var Boolean
+     */
+    protected $updatepresets = false;
 
     /**
      * Has_one relationship
@@ -64,32 +69,32 @@ class PlaceablePage extends Page
                 )
             );
         }
-        foreach ($this->PageFields as $Region) {
+        foreach ($this->PageFields as $region) {
             $fields->addFieldToTab(
-                "Root.{$Region->Type}",
+                "Root.{$region->Type}",
                 HeaderField::create(
-                    "header[$Region->Type]",
-                    $Region->Title
+                    "header[$region->Type]",
+                    $region->Title
                 )
             );
-            foreach ($Region->Fields as $Field) {
+            foreach ($region->Fields as $field) {
                 $fields->addFieldToTab(
-                    "Root.{$Region->Type}",
-                    $Field
+                    "Root.{$region->Type}",
+                    $field
                 );
             }
-            foreach ($Region->Blocks as $Block) {
+            foreach ($region->Blocks as $Block) {
                 $blockfields = CompositeField::create(
                     HeaderField::create(
                         "header[$Block->Type]",
                         $Block->Title
                     )
                 );
-                foreach ($Block->Fields as $Field) {
-                    $blockfields->push($Field);
+                foreach ($Block->Fields as $field) {
+                    $blockfields->push($field);
                 }
                 $fields->addFieldToTab(
-                    "Root.{$Region->Type}",
+                    "Root.{$region->Type}",
                     $blockfields
                 );
             }
@@ -100,7 +105,7 @@ class PlaceablePage extends Page
     public function getPageFields()
     {
         $allfields = arrayList::create();
-        foreach ($this->Regions()->sort('Sort ASC') as $region) {
+        foreach ($this->CurrentRegions as $region) {
             $newRegionFields = arrayList::create();
             $origRegionFields = $region->getCMSPageFields();
             if (!$origRegionFields->count() && !$region->Blocks()->count()) {
@@ -110,8 +115,8 @@ class PlaceablePage extends Page
                 $newRegionFields->push($this->BuildPageField($field, $region));
             }
             $newRegionBlocks = arrayList::create();
-            if ($region->hasMethod('Blocks') && $region->Blocks()->exists()) {
-                foreach ($region->Blocks()->sort('Sort ASC') as $block) {
+            if ($region->hasMethod('CurrentBlocks') && $region->CurrentBlocks->exists()) {
+                foreach ($region->CurrentBlocks as $block) {
                     $newBlockFields = arrayList::create();
                     $origBlockFields = $block->getCMSPageFields();
                     if (!$origBlockFields->count()) {
@@ -157,71 +162,98 @@ class PlaceablePage extends Page
     }
 
     /**
+     * Event handler called before writing to the database.
+     */
+    public function onBeforeWrite()
+    {
+        parent::onBeforeWrite();
+        if (!$this->ID) {
+            // first write
+            $this->updatepresets = true;
+        }
+    }
+
+    /**
      * Event handler called after writing to the database.
      */
     public function onAfterWrite()
     {
         parent::onAfterWrite();
+
+        $this->writePresets();
+
+        // Save fields to related regions and blocks
+        foreach ($this->PageFields as $region) {
+            $regionObject = $region->DataObject;
+            foreach ($region->Fields as $field) {
+                if (isset($_POST["$field->name"])) {
+                    $regionObject->{$field->original_name} = $_POST["$field->name"];
+                }
+            }
+            $regionObject->forceChange()->write();
+            foreach ($region->Blocks as $block) {
+                $blockObject = $block->DataObject;
+                foreach ($block->Fields as $field) {
+                    if (isset($_POST["$field->name"])) {
+                        $blockObject->{$field->original_name} = $_POST["$field->name"];
+                    }
+                }
+                $blockObject->forceChange()->write();
+            }
+        }
+    }
+
+    public function writePresets($presets = null)
+    {
+        if (!($this->isChanged('PageTypeID') || $this->updatepresets)) {
+            return $this;
+        }
+
+        if (!$presets) {
+            $presets = $this->Presets;
+        }
         // build relationships
-        foreach ($this->Presets as $Preset) {
-            $ClassName = $Preset->ObjectClassName;
+        foreach ($presets as $preset) {
+            $className = $preset->ObjectClassName;
             // Find existing relationship
-            $Region = $this->Regions()->find('PresetID', $Preset->ID);
+            $region = $this->Regions()->find('PresetID', $preset->ID);
             // Find existing dataobject if relationship doesn't exist and shares it instance
-            if (!$Region && $Preset->Instance == 'shared') {
-                $Region = DataObject::get_one(
-                    $ClassName,
+            if (!$region && $preset->Instance == 'shared') {
+                $region = DataObject::get_one(
+                    $className,
                     array(
-                        'PresetID' => $Preset->ID
+                        'PresetID' => $preset->ID
                     )
                 );
             }
             // Create new dataobject if nothing else exists
-            if (!$Region) {
-                $Region = $ClassName::create();
+            if (!$region) {
+                $region = $className::create();
             }
-            $Region->PresetID = $Preset->ID;
-            $Region->forceChange()->write();
+            $region->PresetID = $preset->ID;
+            $region->forceChange()->write();
             $this->Regions()->add(
-                $Region,
+                $region,
                 array(
-                    'Sort' => $Preset->Sort,
+                    'Sort' => $preset->Sort,
                     'Display' => true
                 )
             );
         }
         // Hide Regions that no longer exist due to a change in page type or its settings.
         // We don't delete it just in case its reverted back.
-        foreach ($this->Regions() as $Region) {
-            $Preset = $this->Presets->find('ID', $Region->PresetID);
-            if (!$Preset) {
+        foreach ($this->Regions() as $region) {
+            $preset = $this->Presets->find('ID', $region->PresetID);
+            if (!$preset) {
                 $this->Regions()->add(
-                    $Region,
+                    $region,
                     array(
                         'Display' => false
                     )
                 );
             }
         }
-        // Save fields to related regions and blocks
-        foreach ($this->PageFields as $Region) {
-            $RegionObject = $Region->DataObject;
-            foreach ($Region->Fields as $Field) {
-                if (isset($_POST["$Field->name"])) {
-                    $RegionObject->{$Field->original_name} = $_POST["$Field->name"];
-                }
-            }
-            $RegionObject->forceChange()->write();
-            foreach ($Region->Blocks as $Block) {
-                $BlockObject = $Block->DataObject;
-                foreach ($Block->Fields as $Field) {
-                    if (isset($_POST["$Field->name"])) {
-                        $BlockObject->{$Field->original_name} = $_POST["$Field->name"];
-                    }
-                }
-                $BlockObject->forceChange()->write();
-            }
-        }
+
     }
 
     /**
@@ -231,11 +263,11 @@ class PlaceablePage extends Page
      **/
     public function getPresets()
     {
-        $Presets = arrayList::create();
-        foreach ($this->PageType()->Regions()->sort('Sort ASC') as $Region) {
-            $Presets->Push($Region);
+        $presets = arrayList::create();
+        foreach ($this->PageType()->Regions()->sort('Sort ASC') as $region) {
+            $presets->Push($region);
         }
-        return $Presets;
+        return $presets;
     }
 
     /**
@@ -243,7 +275,7 @@ class PlaceablePage extends Page
      *
      * @return ManyManyList
      **/
-    public function getPlacements()
+    public function getCurrentRegions()
     {
         return $this->Regions()->filter(
            array(
@@ -267,7 +299,7 @@ class PlaceablePage_Controller extends Page_Controller
     }
 
     /**
-     * Handles region attached to a page
+     * Handles PlaceableObject attached to a page
      * Assumes URLs in the following format: <URLSegment>/placement/<placeableObject-id>.
      *
      * @return RequestHandler
