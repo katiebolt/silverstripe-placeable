@@ -115,7 +115,7 @@ class PlaceablePage extends Page
                 $newRegionFields->push($this->BuildPageField($field, $region));
             }
             $newRegionBlocks = arrayList::create();
-            if ($region->hasMethod('CurrentBlocks') && $region->CurrentBlocks->exists()) {
+            if ($region->hasMethod('getCurrentBlocks') && $region->CurrentBlocks->exists()) {
                 foreach ($region->CurrentBlocks as $block) {
                     $newBlockFields = arrayList::create();
                     $origBlockFields = $block->getCMSPageFields();
@@ -205,6 +205,9 @@ class PlaceablePage extends Page
 
     public function writePresets($presets = null)
     {
+        if (!$this->hasMethod('PageType')) {
+            return $this;
+        }
         if (!($this->isChanged('PageTypeID') || $this->updatepresets)) {
             return $this;
         }
