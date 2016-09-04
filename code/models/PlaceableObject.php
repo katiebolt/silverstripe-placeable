@@ -22,7 +22,8 @@ class PlaceableObject extends DataObject
      */
     private static $db = array(
         'Title' => 'Text',
-        'UrlSegment' => 'Text'
+        'UrlSegment' => 'Text',
+        'Style' => 'Text'
     );
 
     /**
