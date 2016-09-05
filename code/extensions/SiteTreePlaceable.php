@@ -50,24 +50,4 @@ class SiteTreePlaceable extends DataExtension
         );
         return $fields;
     }
-
-    /**
-     * Stops errors occuring when switching between PlaceablePage types and other page types
-     *
-     * @return arrayList
-     **/
-    public function Regions()
-    {
-        return arrayList::create();
-    }
-
-    /**
-     * Stops errors occuring when switching between PlaceablePage types and other page types
-     *
-     * @return arrayList
-     **/
-    public function getCurrentRegions()
-    {
-        return arrayList::create();
-    }
 }

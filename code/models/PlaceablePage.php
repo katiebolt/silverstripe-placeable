@@ -179,35 +179,33 @@ class PlaceablePage extends Page
     public function onAfterWrite()
     {
         parent::onAfterWrite();
+        if ($this->ClassName == 'PlaceablePage') {
+            $this->writePresets();
 
-        $this->writePresets();
-
-        // Save fields to related regions and blocks
-        foreach ($this->PageFields as $region) {
-            $regionObject = $region->DataObject;
-            foreach ($region->Fields as $field) {
-                if (isset($_POST["$field->name"])) {
-                    $regionObject->{$field->original_name} = $_POST["$field->name"];
-                }
-            }
-            $regionObject->forceChange()->write();
-            foreach ($region->Blocks as $block) {
-                $blockObject = $block->DataObject;
-                foreach ($block->Fields as $field) {
+            // Save fields to related regions and blocks
+            foreach ($this->PageFields as $region) {
+                $regionObject = $region->DataObject;
+                foreach ($region->Fields as $field) {
                     if (isset($_POST["$field->name"])) {
-                        $blockObject->{$field->original_name} = $_POST["$field->name"];
+                        $regionObject->{$field->original_name} = $_POST["$field->name"];
                     }
                 }
-                $blockObject->forceChange()->write();
+                $regionObject->forceChange()->write();
+                foreach ($region->Blocks as $block) {
+                    $blockObject = $block->DataObject;
+                    foreach ($block->Fields as $field) {
+                        if (isset($_POST["$field->name"])) {
+                            $blockObject->{$field->original_name} = $_POST["$field->name"];
+                        }
+                    }
+                    $blockObject->forceChange()->write();
+                }
             }
         }
     }
 
     public function writePresets($presets = null)
     {
-        if (!$this->hasMethod('PageType')) {
-            return $this;
-        }
         if (!($this->isChanged('PageTypeID') || $this->updatepresets)) {
             return $this;
         }
